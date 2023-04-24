@@ -116,6 +116,8 @@ Toolkit.run(async (tools) => {
   try {
     const current = pkg.version.toString();
     // set git user
+    await tools.exec('ls');
+    await tools.exec('cd ../..');
     await tools.exec('git', [
       'config',
       'user.name',
