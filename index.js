@@ -118,9 +118,10 @@ Toolkit.run(async (tools) => {
     // set git user
     await tools.exec('git', [
       'config',
+      '--global',
       'user.name',
       `"${process.env.GITHUB_USER || 'Automated Version Bump'}"`,
-      'global'
+      true
     ]);
     await tools.exec('git', [
       'config',
