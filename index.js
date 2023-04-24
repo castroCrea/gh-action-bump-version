@@ -1,8 +1,6 @@
 import { Toolkit } from 'actions-toolkit';
 import { execSync } from 'child_process';
 
-const rootPath = process.env.GITHUB_WORKSPACE;
-
 // Change working directory if user defined PACKAGEJSON_DIR
 if (process.env.PACKAGEJSON_DIR) {
   process.env.GITHUB_WORKSPACE = `${process.env.GITHUB_WORKSPACE}/${process.env.PACKAGEJSON_DIR}`;
@@ -117,18 +115,12 @@ Toolkit.run(async (tools) => {
   // GIT logic
   try {
     const current = pkg.version.toString();
-
-    // Change working directory if user defined PACKAGEJSON_DIR
-    process.env.GITHUB_WORKSPACE = rootPath;
-    process.chdir(process.env.GITHUB_WORKSPACE);
-
-
-
     // set git user
     await tools.exec('git', [
       'config',
       'user.name',
       `"${process.env.GITHUB_USER || 'Automated Version Bump'}"`,
+      'global'
     ]);
     await tools.exec('git', [
       'config',
@@ -148,25 +140,12 @@ Toolkit.run(async (tools) => {
       currentBranch = process.env['INPUT_TARGET-BRANCH'];
     }
     console.log('currentBranch:', currentBranch);
-
-
-    // Change working directory if user defined PACKAGEJSON_DIR
-    if (process.env.PACKAGEJSON_DIR) {
-      process.env.GITHUB_WORKSPACE = `${process.env.GITHUB_WORKSPACE}/${process.env.PACKAGEJSON_DIR}`;
-      process.chdir(process.env.GITHUB_WORKSPACE);
-    }
-
     // do it in the current checked out github branch (DETACHED HEAD)
     // important for further usage of the package.json version
     await tools.exec('npm', ['version', '--allow-same-version=true', '--git-tag-version=false', current]);
     console.log('current:', current, '/', 'version:', version);
     let newVersion = execSync(`npm version --git-tag-version=false ${version}`).toString().trim().replace(/^v/, '');
     newVersion = `${tagPrefix}${newVersion}`;
-
-    // Change working directory if user defined PACKAGEJSON_DIR
-    process.env.GITHUB_WORKSPACE = rootPath;
-    process.chdir(process.env.GITHUB_WORKSPACE);
-
     await tools.exec('git', ['commit', '-a', '-m', commitMessage.replace(/{{version}}/g, newVersion)]);
 
     // now go to the actual branch to perform the same versioning
