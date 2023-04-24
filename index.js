@@ -1,5 +1,5 @@
-const { Toolkit } = require('actions-toolkit');
-const { execSync } = require('child_process');
+import { Toolkit } from 'actions-toolkit';
+import { execSync } from 'child_process';
 
 // Change working directory if user defined PACKAGEJSON_DIR
 if (process.env.PACKAGEJSON_DIR) {
@@ -107,7 +107,7 @@ Toolkit.run(async (tools) => {
 
   // case: if user sets push to false, to skip pushing new tag/package.json
   const push = process.env['INPUT_PUSH']
-  if ( push === "false" || push === false ) {
+  if (push === "false" || push === false) {
     tools.exit.success('User requested to skip pushing new tag and package.json. Finished.');
     return;
   }
@@ -164,7 +164,7 @@ Toolkit.run(async (tools) => {
     } catch (e) {
       console.warn(
         'git commit failed because you are using "actions/checkout@v2"; ' +
-          'but that doesnt matter because you dont need that git commit, thats only for "actions/checkout@v1"',
+        'but that doesnt matter because you dont need that git commit, thats only for "actions/checkout@v1"',
       );
     }
 
